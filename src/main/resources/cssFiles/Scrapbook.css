@@ -1,0 +1,15 @@
+#VBox {
+    -fx-background-color: #3e3ef6;
+}
+
+.table-row-cell {
+    -fx-cell-size: 50px;
+}
+
+.table-row-cell:empty {
+    -fx-background-color: white;
+}
+
+.table-row-cell:empty .table-cell {
+    -fx-border-width: 0px;
+}
