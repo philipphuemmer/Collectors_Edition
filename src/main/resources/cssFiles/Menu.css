@@ -1,6 +1,5 @@
 #closeButton {
     -fx-background-color: transparent;
-
 }
 
 #closeButton:hover {
@@ -35,8 +34,11 @@
     -fx-background-color: rgba(255,255,255, 0.1);
 }
 
+.button:focused {
+    -fx-text-fill: rgba(255,255,255, 1);
+}
+
 #VBoxLeft {
-    /*-fx-background-color: #3e3ef6;*/
     -fx-background-image: url("../imageFiles/Leder2.PNG");
     -fx-background-size: cover;
 }

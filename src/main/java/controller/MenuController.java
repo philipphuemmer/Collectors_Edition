@@ -11,6 +11,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import program.Collectable;
@@ -49,7 +51,7 @@ public class MenuController implements Initializable{
     @FXML
     public Button deleteScrapbook;
 
-    //
+    // List of all Scrapbooks
     public ObservableList<String> scrapbooks = FXCollections.observableArrayList();
     //
     private File saveDirectory;
@@ -111,7 +113,6 @@ public class MenuController implements Initializable{
     public void setSaveDirectoryonDesktop() {
         saveDirectoryPath = System.getProperty("user.home") + File.separator + "Documents" + File.separator + "Collector's Edition" + File.separator + "Scrapbooks";
         //saveDirectoryPath = System.getenv("ProgramFiles") + File.separator + "Collector's Edition";
-        System.out.println(saveDirectoryPath);
         saveDirectory = new File(saveDirectoryPath);
         if (!saveDirectory.exists()) {
             saveDirectory.mkdirs();
@@ -192,6 +193,7 @@ public class MenuController implements Initializable{
         }
     }
 
+    // Read saveFile for selected Scrapbook and load Scrapbook
     @FXML
     public void openScrapbook() {
         try {
@@ -217,6 +219,7 @@ public class MenuController implements Initializable{
             BufferedReader bufferedReader = new BufferedReader(new FileReader(saveFilePath));
 
             while ((line = bufferedReader.readLine()) != null) {
+                // First Part: Number of Columns (Excluding Image Column)
                 if (counter == 1) {
                     if (line.matches("[0-9]+")) {
                         numberColumns = Integer.parseInt(line);
@@ -224,6 +227,7 @@ public class MenuController implements Initializable{
                         continue;
                     }
                 }
+                // Second Part: Names of all Columns
                 if (counter == 2) {
                     columns.addAll(line.split(";"));
                     System.out.println(columns.size());
@@ -238,9 +242,17 @@ public class MenuController implements Initializable{
                         counterColumns++;*/
 
                 }
+                // Third Part: Path to Image and Content of all Rows (Collectables)
                 if (counter == 3) {
                     data.addAll(line.split(";", -1));
-                    Collectable collectable = new Collectable(data, columns);
+
+                    String imagePath = data.get(0);
+                    data.remove(imagePath);
+                    ImageView photo = new ImageView(new Image(imagePath));
+                    photo.setFitHeight(100);
+                    photo.setFitWidth(100);
+
+                    Collectable collectable = new Collectable(data, columns, photo);
                     collectables.add(collectable);
                     data.clear();
 

@@ -5,6 +5,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import java.util.List;
 
@@ -12,12 +13,20 @@ public class Collectable {
 
     public ObservableList<String> columns;
     public ObservableList<String> content = FXCollections.observableArrayList();
-    public Image image;
+
+    public ImageView photo;
     //public ObservableList<StringProperty> contentProperty = FXCollections.observableArrayList();
 
     public int dataSize;
 
     public Collectable(ObservableList<String> data, ObservableList<String> allColumns) {
+        columns = allColumns;
+        dataSize = data.size();
+        content.addAll(data);
+    }
+
+    public Collectable(ObservableList<String> data, ObservableList<String> allColumns, ImageView photo) {
+        this.photo = photo;
         columns = allColumns;
         dataSize = data.size();
         content.addAll(data);
@@ -34,6 +43,14 @@ public class Collectable {
     public void setContent(String s, int id) {
         //SimpleStringProperty simpleStringProperty = new SimpleStringProperty(s);
         content.set(id, s);
+    }
+
+    public ImageView getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(ImageView photo) {
+        this.photo = photo;
     }
 
     public String toString() {

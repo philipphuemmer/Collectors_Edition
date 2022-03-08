@@ -13,13 +13,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TablePosition;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TableColumn;
 
 import java.io.*;
 import java.net.URL;
@@ -41,14 +41,19 @@ public class ScrapbookController implements Initializable {
     //
     public MenuController menuController;
 
+    //
     @FXML
     private Button saveButton;
     @FXML
     private Button backToMenuButton;
     @FXML
     private Button saveLocationButton;
+    //
     @FXML
     private Button addCollectableButton;
+    @FXML
+    private Button changeImageButton;
+    //
     @FXML
     public TableView<Collectable> tableView;
 
@@ -68,6 +73,9 @@ public class ScrapbookController implements Initializable {
     private File saveFile;
     // Data of the TableView
     private StringBuilder data;
+
+    public TableColumn<Collectable, String> imageTableColumn;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -97,6 +105,11 @@ public class ScrapbookController implements Initializable {
         }
     }
 
+    // Set the Columns, selected in the CeckComboBox
+    public void setColumnChoices(ObservableList<String> columns) {
+        createColumns = columns;
+    }
+
     // Set the Columns in the TableView
     public void setColumns() {
         /*for (String s: createColumns) {
@@ -108,9 +121,47 @@ public class ScrapbookController implements Initializable {
             allColumns.add(s);
         }*/
 
+        //imageTableColumn.setCellValueFactory();
+
+        /*imageTableColumn = new TableColumn<>("imageFiles/test.png");
+        imageTableColumn.setMinWidth(200);
+        imageTableColumn.setCellFactory(new Callback<TableColumn<Collectable, Image>, TableCell<Collectable, Image>>() {
+            public TableCell<Collectable, Image> call(TableColumn<Collectable, Image> param) {
+
+                final ImageView imageView = new ImageView();
+                imageView.setFitHeight(50);
+                imageView.setFitWidth(50);
+
+                TableCell<Collectable, Image> cell = new TableCell<Collectable, Image>(){
+
+                    @Override
+                    protected void updateItem(Image item, boolean empty) {
+                        if(item != null)
+                            imageView.setImage(new Image("imageFiles/test.png"));
+                    }
+
+                };
+                cell.setGraphic(imageView);
+                return cell;
+            }
+        });
+        imageTableColumn.setCellValueFactory(new PropertyValueFactory<Collectable, Image>("imageFiles/test.png"));
+        tableView.getColumns().add(imageTableColumn);*/
+
+        imageTableColumn = new TableColumn<>("Image");
+        imageTableColumn.setMinWidth(107);
+        imageTableColumn.setMaxWidth(107);
+        imageTableColumn.setResizable(false);
+        imageTableColumn.setCellValueFactory(new PropertyValueFactory<>("photo"));
+
+        imageTableColumn.getStyleClass().add("imageColumn");
+
+        tableView.getColumns().add(imageTableColumn);
+
         for (int i = 0; i < createColumns.size(); i++) {
             final int j = i;
             TableColumn<Collectable, String> column = new TableColumn<>(createColumns.get(i));
+            column.getStyleClass().add("textColumn");
             column.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Collectable, String>, ObservableValue<String>>() {
                 @Override
                 public ObservableValue<String> call(TableColumn.CellDataFeatures<Collectable, String> param) {
@@ -124,14 +175,10 @@ public class ScrapbookController implements Initializable {
         }
     }
 
-    // Set the Columns, selected in the CeckComboBox
-    public void setColumnChoices(ObservableList<String> columns) {
-        createColumns = columns;
-    }
-
     // Add 5 Rows (Collectables)
     public void addRows() {
-        int x = tableView.getColumns().size();
+
+        int x = tableView.getColumns().size() - 1;
         ObservableList<String> data = FXCollections.observableArrayList();
         String ergebnis = "";
         for (int i = 0; i < x; i++) {
@@ -139,7 +186,10 @@ public class ScrapbookController implements Initializable {
         }
 
         for (int j = 0; j < 5; j++) {
-            Collectable collectable = new Collectable(data, allColumns);
+            ImageView photo = new ImageView(new Image("imageFiles/noImagePlaceholder.jpg"));
+            photo.setFitHeight(100);
+            photo.setFitWidth(100);
+            Collectable collectable = new Collectable(data, allColumns, photo);
             allCollectables.add(collectable);
         }
         tableView.setItems(allCollectables);
@@ -191,11 +241,11 @@ public class ScrapbookController implements Initializable {
             OutputStreamWriter streamWriter = new OutputStreamWriter(outputStream);
             BufferedWriter writer = new BufferedWriter(streamWriter);
 
-            // First Part: Number of all Columns
+            // First Part: Number of Columns (Excluding Image Columns)
             writer.write(String.valueOf(allColumns.size()));
             writer.newLine();
 
-            // Second Part: Name of all Columns
+            // Second Part: Names of all Columns
             for (String allColumn : allColumns) {
                 writer.write(allColumn + ";");
                 //writer.newLine();
@@ -203,9 +253,12 @@ public class ScrapbookController implements Initializable {
 
             writer.newLine();
 
-            // Third Part: Content of all Rows (Collectables)
+            // Third Part: Path to Image and Content of all Rows (Collectables)
             for (Collectable collectable : allCollectables) {
                 ObservableList<String> content = collectable.getContent();
+                String imagePath = collectable.getPhoto().getImage().getUrl();
+
+                writer.write(imagePath + ";");
 
                 int counterString = 1;
                 for (String stringProperty : content) {
@@ -268,5 +321,21 @@ public class ScrapbookController implements Initializable {
         Collectable collectable = new Collectable(dataCollectable, allColumns);
         allCollectables.add(collectable);
         tableView.setItems(allCollectables);
+    }
+
+    @FXML
+    public void changeImage() {
+        Collectable collectable = tableView.getSelectionModel().getSelectedItem();
+
+        FileChooser fileChooser = new FileChooser();
+        File newImage = fileChooser.showOpenDialog(scrapbookStage);
+
+        if (newImage != null) {
+            ImageView newPhoto = new ImageView(new Image(newImage.toURI().toString()));
+            newPhoto.setFitHeight(100);
+            newPhoto.setFitWidth(100);
+            collectable.setPhoto(newPhoto);
+            dirtyFlag.set(true);
+        }
     }
 }

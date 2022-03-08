@@ -98,51 +98,6 @@ public class CreatingScrapbookController implements Initializable {
         stage.close();
     }
 
-    /*@FXML
-    public void setSaveLocationButton() {
-        try {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-            fileChooser.setTitle("Save");
-
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
-            fileChooser.getExtensionFilters().add(extFilter);
-            saveFile = fileChooser.showSaveDialog(creatingScrapbookStage);
-            if (saveFile != null) {
-                createSaveFile(saveFile);
-            }
-            System.out.println(saveFile.getAbsolutePath());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }*/
-
-    // Set the Save Location and Create the Save File
-    /*@FXML
-    public void setSaveLocation() {
-        FileChooser fileChooser = new FileChooser();
-        FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
-        fileChooser.getExtensionFilters().add(extensionFilter);
-        ScrapbookController.file = fileChooser.showSaveDialog(creatingScrapbookStage);
-
-        if (ScrapbookController.file != null) {
-            createSaveFile(ScrapbookController.getContent(), ScrapbookController.file);
-        }
-    }
-
-    private void createSaveFile(String content, File file) {
-        try {
-            PrintWriter writer = new PrintWriter(file);
-            writer.println(content);
-            writer.close();
-            saveLocationIsSet = true;
-        } catch (IOException e) {
-            Logger.getLogger(CreatingScrapbookController.class.getName()).log(Level.SEVERE, null, e);
-        }
-    }
-    */
-
     private void setColumnChoices() {
         allColumnChoices.clear();
         allColumnChoices.add("Name");
