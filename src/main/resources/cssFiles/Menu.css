@@ -1,80 +1,85 @@
-#closeButton {
+#TitleBar .button {
     -fx-background-color: transparent;
+    -fx-background-insets: 0 0 0 0;
+    -fx-background-radius: 0;
 }
 
-#closeButton:hover {
-    -fx-border-color: black;
+#TitleBar .button:hover {
+    -fx-background-color: rgba(255,255,255, 0.2);
+}
+
+#MinimizeButton:hover {
+    -fx-background-color: rgba(255,255,255, 0.2);
+}
+
+#CloseButton:hover {
     -fx-background-color: red;
 }
 
-#minimizeButton {
+#Sidebar {
     -fx-background-color: transparent;
 }
 
-#minimizeButton:hover {
-    -fx-background-color: rgba(255,255,255, 0.5);
-    -fx-text-fill: black;
-    -fx-border-color: black;
-}
-
-.button {
-    /*
-    -fx-background-position: center;
-    -fx-background-repeat: no-repeat;
-    -fx-background-size: 149 148;
-    -fx-background-image: url("../imageFiles/test.png");
-    -fx-background-color: #3E3EF6;*/
-
+#Sidebar .button {
     -fx-background-color: transparent;
 }
 
-.button:hover {
-    /*-fx-background-color: #0313fc;*/
-    -fx-text-fill: rgba(255,255,255, 1);
-    -fx-background-color: rgba(255,255,255, 0.1);
+#Sidebar .button:hover {
+    -fx-background-color: rgba(255,255,255, 0.2);
+    -fx-border-color: white;
+    -fx-border-width: 3px;
 }
 
-.button:focused {
-    -fx-text-fill: rgba(255,255,255, 1);
-}
-
-#VBoxLeft {
-    -fx-background-image: url("../imageFiles/Leder2.PNG");
-    -fx-background-size: cover;
-}
-
-#VBoxRight {
-    -fx-background-image: url("../imageFiles/Papier1.png");
-    -fx-background-size: cover;
-}
-
-#openScrapbookButton {
-    -fx-background-color: rgba(255,255,255, 0.5);
-    -fx-border-color: black;
-}
-
-#deleteScrapbookButton {
-    -fx-background-color: rgba(255,255,255, 0.5);
-    -fx-border-color: black;
-}
-
-#scrapbookNames {
+/*#OpenScrapbookVBox {
     -fx-background-color: transparent;
-    -fx-border-color: black;
-    -fx-selection-bar: rgba(255,255,255, 0.1);
+    -fx-border-color: white;
+    -fx-border-width: 0px;
+}*/
+
+#OpenScrapbookText {
+    -fx-effect: dropshadow(one-pass-box, rgba(0,0,0,0.8), 0.8, 1, 1, 1);
 }
 
-#scrapbookNames .list-cell {
+#ScrapbookNames {
     -fx-background-color: transparent;
-    -fx-border-color: black;
 }
 
-#scrapbookNames .list-cell:empty {
+#ScrapbookNames .list-cell {
+    -fx-alignment: CENTER;
+    -fx-background-color: transparent;
+    -fx-border-color: white;
+    -fx-border-width: 1px 0px 1px 0px;
+    -fx-border-insets: 0 0 -1 0;
+    -fx-text-fill: white;
+    -fx-font-size: 14pt;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(one-pass-box, rgba(0,0,0,0.8), 0.8, 1, 1, 1);
+    -fx-padding: 8 0 8 0;
+
+}
+
+#ScrapbookNames .list-cell:empty {
     -fx-border-width: 0;
 }
 
-#scrapbookNames .list-cell:filled:selected {
-    -fx-background-color: rgba(255,255,255, 0.5);
+#ScrapbookNames .list-cell:filled:selected {
+    -fx-background-color: rgba(255,255,255, 0.2);
+}
+
+#ListViewButtons .button {
+    -fx-background-color: transparent;
+    -fx-border-color: white;
+    -fx-border-width: 3px;
+    -fx-text-fill: white;
+}
+
+#ListViewButtons .button:hover {
+    -fx-background-color: rgba(255,255,255, 0.2);
+}
+
+#MenuPane {
+    -fx-background-image: url("../imageFiles/Velvet3.jpg");
+    -fx-background-size: cover;
 }
 
 

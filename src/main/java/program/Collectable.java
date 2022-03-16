@@ -11,6 +11,7 @@ import java.util.List;
 
 public class Collectable {
 
+    private int id;
     public ObservableList<String> columns;
     public ObservableList<String> content = FXCollections.observableArrayList();
 
@@ -51,6 +52,14 @@ public class Collectable {
 
     public void setPhoto(ImageView photo) {
         this.photo = photo;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String toString() {

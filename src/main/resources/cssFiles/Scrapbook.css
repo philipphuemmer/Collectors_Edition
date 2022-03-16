@@ -1,6 +1,16 @@
-#VBox {
+#Sidebar {
     -fx-background-image: url("../imageFiles/Velvet2.jpg");
     -fx-background-size: cover;
+}
+
+#Sidebar .button {
+    -fx-background-color: transparent;
+}
+
+#Sidebar .button:hover {
+    -fx-background-color: rgba(255,255,255, 0.2);
+    -fx-border-color: white;
+    -fx-border-width: 3px;
 }
 
 #tableView {
@@ -15,6 +25,21 @@
     -fx-border-color: black;
 }
 
+#tableView .column-resize-line {
+    -fx-background-color: white;
+}
+
+#tableView .column-drag-header {
+    -fx-background-color: rgba(255,255,255, 0.4);
+}
+
+#tableView .column-drag-header .label{
+    -fx-effect: dropshadow(one-pass-box, rgba(0,0,0,0.8), 0.8, 1, 2, 2);
+    -fx-text-fill: white;
+    -fx-font-size: 20pt;
+    -fx-font-weight: bold;
+}
+
 .textColumn.table-cell {
     -fx-alignment: CENTER;
     -fx-border-width: 0px 1px 0px 0px;
@@ -22,6 +47,8 @@
     -fx-font-size: 15pt;
     -fx-font-weight: bold;
     -fx-text-fill: white;
+    -fx-effect: dropshadow(one-pass-box, rgba(0,0,0,0.8), 0.8, 1, 1, 1);
+    -fx-padding: 0 0 0 0;
 }
 
 .textColumn.table-cell .text {
@@ -29,10 +56,44 @@
     -fx-stroke-width: 1px;*/
 }
 
-.text-field-table-cell .text-field {
-   -fx-text-fill: white;
-   -fx-border-color: white;
-   -fx-background-color: transparent;
+.imageColumn.table-cell {
+    -fx-alignment: CENTER;
+    -fx-padding: 2 0 1 0;
+}
+
+.text-area {
+    -fx-control-inner-background: transparent;
+    -fx-text-fill: white;
+    -fx-display-caret: true;
+    -fx-highlight-fill: rgba(0,0,0, 0.8);
+    -fx-prompt-text-fil: transparent;
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+    -fx-padding: 0 0 0 0;
+}
+
+.text-area .content{
+    -fx-alignment: CENTER;
+    -fx-border-color: transparent;
+}
+
+.text-area.scroll-pane {
+    -fx-background-color:transparent;
+}
+
+.text-area .scroll-pane .viewport{
+    -fx-background-color: transparent;
+
+}
+
+
+.text-area .scroll-pane .content{
+    -fx-background-color: transparent;
+    -fx-padding: 0 0 -15 0;
+}
+
+.text-area .scroll-pane .content .text{
+    -fx-text-alignment: center;
 }
 
 .imageColumn.table-cell {
@@ -59,14 +120,20 @@
 }
 
 #tableView .column-header .label {
+    -fx-effect: dropshadow(one-pass-box, rgba(0,0,0,0.8), 0.8, 1, 2, 2);
     -fx-text-fill: white;
 }
 
 #tableView .column-header-background {
     /*-fx-background-image: url("../imageFiles/Velvet3.jpg");
     -fx-background-size: cover;*/
-
     -fx-background-color: transparent;
+}
+
+#tableView .filler {
+    -fx-background-color: transparent;
+    -fx-border-width: 0px 0px 1px 0px;
+    -fx-border-color: black;
 }
 
 #tableView .table-row-cell:empty {
@@ -79,13 +146,50 @@
     -fx-border-width: 0px;
 }
 
-#HBox {
+#ToolBox {
     -fx-background-color: transparent;
+}
+
+#ToolBox .button {
+    -fx-background-color: transparent;
+    -fx-border-color: white;
+    -fx-border-width: 3px;
+}
+
+#ToolBox .button:hover {
+    -fx-background-color: rgba(255,255,255, 0.2);
 }
 
 #Background {
     -fx-background-image: url("../imageFiles/Papier2.jpg");
     -fx-background-size: cover;
+}
+
+#TitleBar {
+    -fx-background-image: url("../imageFiles/TitleBar.jpg");
+    -fx-background-size: cover;
+}
+
+#TitleBar .button {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0 0 0 0;
+    -fx-background-radius: 0;
+}
+
+#TitleBar .button:hover {
+    -fx-background-color: rgba(255,255,255, 0.2);
+}
+
+#MinimizeButton :hover {
+    -fx-background-color: rgba(255,255,255, 0.2);
+}
+
+#CloseButton :hover {
+    -fx-background-color: black;
+}
+
+.dragAndDropRow {
+    -fx-background-color:red;
 }
 
 /*#VBox {

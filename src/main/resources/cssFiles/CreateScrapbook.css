@@ -1,0 +1,100 @@
+#CreateScrapbookPane {
+    -fx-background-image: url("../imageFiles/Coins.png");
+    -fx-background-size: cover;
+}
+
+#TitleBar .button {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0 0 0 0;
+    -fx-background-radius: 0;
+}
+
+#TitleBar .button:hover {
+    -fx-background-color: rgba(255,255,255, 0.2);
+}
+
+#ColumnList {
+    -fx-background-color: transparent;
+    -fx-border-color: white;
+    -fx-border-width: 3px 0px 3px 0px;
+}
+
+#ColumnList .list-cell {
+    -fx-alignment: CENTER;
+    -fx-background-color: transparent;
+    -fx-border-color: white;
+    -fx-border-width: 1px 0px 1px 0px;
+    -fx-border-insets: 0 0 -1 0;
+    -fx-text-fill: white;
+    -fx-font-size: 14pt;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(one-pass-box, rgba(0,0,0,0.8), 0.8, 1, 1, 1);
+    -fx-padding: 8 0 8 0;
+
+}
+
+#ColumnList .list-cell:empty {
+    -fx-border-width: 0;
+}
+
+#ColumnList .list-cell:filled:selected {
+    -fx-background-color: rgba(255,255,255, 0.2);
+}
+
+#ColumnList .placeholder .label {
+    -fx-text-fill: white;
+    -fx-font-size: 14pt;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(one-pass-box, rgba(0,0,0,0.8), 0.8, 1, 1, 1);
+}
+
+#GeneralColumnCombo {
+    -fx-background-color: white;
+    -fx-border-color: white;
+    -fx-border-insets: 0 0 -1 0;
+}
+
+#GeneralColumnCombo .list-cell:hover {
+    -fx-background-color: black;
+}
+
+#GeneralColumnCombo .list-view .list-cell:filled:selected {
+    -fx-background-color: black;
+
+}
+
+#IndividualColumnText {
+    -fx-background-color: white;
+    -fx-border-color: white;
+
+}
+
+#AddColumnButton {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0 0 0 0;
+    -fx-border-color: white;
+    -fx-border-width: 3px;
+}
+
+#AddColumnButton:hover {
+    -fx-background-color: rgba(255,255,255, 0.2);
+}
+
+#CreateCancelHBox .button {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0 0 0 0;
+    -fx-border-color: white;
+    -fx-border-width: 3px;
+}
+
+#CreateCancelHBox .button:hover {
+    -fx-background-color: rgba(255,255,255, 0.2);
+}
+
+
+
+
+
+
+
+

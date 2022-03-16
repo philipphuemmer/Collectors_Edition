@@ -11,6 +11,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -18,6 +19,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.*;
+import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -30,6 +33,8 @@ import java.util.ResourceBundle;
 
 import javafx.util.Callback;
 import program.Collectable;
+import program.ResizeHelper;
+import program.TextAreaTableCell;
 import program.UpdateCollectable;
 
 public class ScrapbookController implements Initializable {
@@ -50,9 +55,25 @@ public class ScrapbookController implements Initializable {
     private Button saveLocationButton;
     //
     @FXML
-    private Button addCollectableButton;
-    @FXML
     private Button changeImageButton;
+
+    @FXML
+    private Button addCollectableButton;
+
+    @FXML
+    private Button deleteCollectableButton;
+    // Title Bar as HBox
+    @FXML
+    private HBox titleBar;
+    // Title Bar Close Button
+    @FXML
+    private Button closeButton;
+    // Title Bar Minimize Button
+    @FXML
+    private Button minimizeButton;
+    // Title Bar Maximize Button
+    @FXML
+    private Button maximizeButton;
     //
     @FXML
     public TableView<Collectable> tableView;
@@ -65,8 +86,6 @@ public class ScrapbookController implements Initializable {
     private ObservableList<Collectable> allCollectables = FXCollections.observableArrayList();
     // BooleanProperty for the SaveButton
     private final BooleanProperty dirtyFlag = new SimpleBooleanProperty();
-    // Queue for Updated Collectables
-    private final Queue updateList = new LinkedList<>();
     //
     private String saveFilePath;
     // DataFile of the TableView
@@ -74,12 +93,70 @@ public class ScrapbookController implements Initializable {
     // Data of the TableView
     private StringBuilder data;
 
-    public TableColumn<Collectable, String> imageTableColumn;
+
+    // Used for Drag and Drop of TableView Rows
+    private static final DataFormat SERIALIZED_MIME_TYPE = new DataFormat("application/x-java-serialized-object");
+
+    private double xOffset = 0;
+    private double yOffset = 0;
+    private boolean fullscreen = false;
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         saveButton.disableProperty().bind( dirtyFlag.not() );
+
+        tableView.setRowFactory(tv -> {
+            TableRow<Collectable> row = new TableRow<>();
+
+            row.setOnDragDetected(event -> {
+                if (! row.isEmpty()) {
+                    Integer index = row.getIndex();
+                    Dragboard db = row.startDragAndDrop(TransferMode.MOVE);
+                    db.setDragView(row.snapshot(null, null));
+                    ClipboardContent cc = new ClipboardContent();
+                    cc.put(SERIALIZED_MIME_TYPE, index);
+                    db.setContent(cc);
+                    event.consume();
+                }
+            });
+
+            row.setOnDragOver(event -> {
+                Dragboard db = event.getDragboard();
+                if (db.hasContent(SERIALIZED_MIME_TYPE)) {
+                    if (row.getIndex() != ((Integer)db.getContent(SERIALIZED_MIME_TYPE)).intValue()) {
+                        event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+                        event.consume();
+                    }
+                }
+            });
+
+            row.setOnDragDropped(event -> {
+                Dragboard db = event.getDragboard();
+                if (db.hasContent(SERIALIZED_MIME_TYPE)) {
+                    int draggedIndex = (Integer) db.getContent(SERIALIZED_MIME_TYPE);
+                    Collectable draggedPerson = tableView.getItems().remove(draggedIndex);
+
+                    int dropIndex ;
+
+                    if (row.isEmpty()) {
+                        dropIndex = tableView.getItems().size() ;
+                    } else {
+                        dropIndex = row.getIndex();
+                    }
+
+                    tableView.getItems().add(dropIndex, draggedPerson);
+
+                    event.setDropCompleted(true);
+                    tableView.getSelectionModel().select(dropIndex);
+                    event.consume();
+
+                    dirtyFlag.set(true);
+                }
+            });
+
+            return row ;
+        });
     }
 
     // Get the Name of the Scrapbook
@@ -112,64 +189,43 @@ public class ScrapbookController implements Initializable {
 
     // Set the Columns in the TableView
     public void setColumns() {
-        /*for (String s: createColumns) {
-            TableColumn<Collectable, String> column = new TableColumn<>(s);
-            column.setCellValueFactory(new PropertyValueFactory<>(s));//Factory(TextFieldTableCell.forTableColumn());
-            column.setCellFactory(TextFieldTableCell.forTableColumn());
-            column.setOnEditCommit( dataEditCommitHandler );
-            tableView.getColumns().add(column);
-            allColumns.add(s);
-        }*/
+        TableColumn<Collectable, Integer> idColumn = new TableColumn<>("ID");
+        idColumn.setMinWidth(40);
+        idColumn.setMaxWidth(40);
+        idColumn.setResizable(false);
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        idColumn.getStyleClass().add("textColumn");
+        idColumn.setSortable(false);
+        tableView.getColumns().add(idColumn);
 
-        //imageTableColumn.setCellValueFactory();
+        idColumn.setSortType(TableColumn.SortType.ASCENDING);
+        tableView.getSortOrder().add(idColumn);
 
-        /*imageTableColumn = new TableColumn<>("imageFiles/test.png");
-        imageTableColumn.setMinWidth(200);
-        imageTableColumn.setCellFactory(new Callback<TableColumn<Collectable, Image>, TableCell<Collectable, Image>>() {
-            public TableCell<Collectable, Image> call(TableColumn<Collectable, Image> param) {
+        TableColumn<Collectable, String> imageTableColumn = new TableColumn<>("Image");
 
-                final ImageView imageView = new ImageView();
-                imageView.setFitHeight(50);
-                imageView.setFitWidth(50);
-
-                TableCell<Collectable, Image> cell = new TableCell<Collectable, Image>(){
-
-                    @Override
-                    protected void updateItem(Image item, boolean empty) {
-                        if(item != null)
-                            imageView.setImage(new Image("imageFiles/test.png"));
-                    }
-
-                };
-                cell.setGraphic(imageView);
-                return cell;
-            }
-        });
-        imageTableColumn.setCellValueFactory(new PropertyValueFactory<Collectable, Image>("imageFiles/test.png"));
-        tableView.getColumns().add(imageTableColumn);*/
-
-        imageTableColumn = new TableColumn<>("Image");
-        imageTableColumn.setMinWidth(107);
-        imageTableColumn.setMaxWidth(107);
+        imageTableColumn.setMinWidth(105);
+        imageTableColumn.setMaxWidth(105);
         imageTableColumn.setResizable(false);
         imageTableColumn.setCellValueFactory(new PropertyValueFactory<>("photo"));
-
         imageTableColumn.getStyleClass().add("imageColumn");
+        imageTableColumn.setSortable(false);
 
         tableView.getColumns().add(imageTableColumn);
 
         for (int i = 0; i < createColumns.size(); i++) {
             final int j = i;
             TableColumn<Collectable, String> column = new TableColumn<>(createColumns.get(i));
-            column.getStyleClass().add("textColumn");
+            column.setPrefWidth(150);
             column.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Collectable, String>, ObservableValue<String>>() {
                 @Override
                 public ObservableValue<String> call(TableColumn.CellDataFeatures<Collectable, String> param) {
                     return new SimpleStringProperty(String.valueOf(param.getValue().getContent().get(j)));
                 }
             });
-            column.setCellFactory(TextFieldTableCell.forTableColumn());
+            column.setCellFactory(TextAreaTableCell.forTableColumn());
+            column.getStyleClass().add("textColumn");
             column.setOnEditCommit(dataEditCommitHandler);
+            column.setSortable(false);
             tableView.getColumns().add(column);
             allColumns.add(createColumns.get(i));
         }
@@ -178,7 +234,7 @@ public class ScrapbookController implements Initializable {
     // Add 5 Rows (Collectables)
     public void addRows() {
 
-        int x = tableView.getColumns().size() - 1;
+        int x = tableView.getColumns().size() - 2;
         ObservableList<String> data = FXCollections.observableArrayList();
         String ergebnis = "";
         for (int i = 0; i < x; i++) {
@@ -191,6 +247,7 @@ public class ScrapbookController implements Initializable {
             photo.setFitWidth(100);
             Collectable collectable = new Collectable(data, allColumns, photo);
             allCollectables.add(collectable);
+            collectable.setId(allCollectables.indexOf(collectable) + 1);
         }
         tableView.setItems(allCollectables);
     }
@@ -214,7 +271,7 @@ public class ScrapbookController implements Initializable {
     private final EventHandler<TableColumn.CellEditEvent<Collectable,String> > dataEditCommitHandler = (evt) -> {
         if( !dirtyFlag.get() ) {
             dirtyFlag.set(true);
-            System.out.println("true");
+            //System.out.println("true");
         }
         Collectable collectable = getObjectAtEvent(evt);
 
@@ -253,11 +310,12 @@ public class ScrapbookController implements Initializable {
 
             writer.newLine();
 
-            // Third Part: Path to Image and Content of all Rows (Collectables)
+            // Third Part: ID, Path to Image and Content of all Rows (Collectables)
             for (Collectable collectable : allCollectables) {
                 ObservableList<String> content = collectable.getContent();
                 String imagePath = collectable.getPhoto().getImage().getUrl();
 
+                writer.write(collectable.getId() + ";");
                 writer.write(imagePath + ";");
 
                 int counterString = 1;
@@ -313,17 +371,6 @@ public class ScrapbookController implements Initializable {
     }
 
     @FXML
-    public void addCollectable() {
-        ObservableList<String> dataCollectable = FXCollections.observableArrayList();
-        for (int i = 0; i < allColumns.size(); i++) {
-            dataCollectable.add("");
-        }
-        Collectable collectable = new Collectable(dataCollectable, allColumns);
-        allCollectables.add(collectable);
-        tableView.setItems(allCollectables);
-    }
-
-    @FXML
     public void changeImage() {
         Collectable collectable = tableView.getSelectionModel().getSelectedItem();
 
@@ -338,4 +385,106 @@ public class ScrapbookController implements Initializable {
             dirtyFlag.set(true);
         }
     }
+
+    @FXML
+    public void addCollectable() {
+        ObservableList<String> dataCollectable = FXCollections.observableArrayList();
+        for (int i = 0; i < allColumns.size(); i++) {
+            dataCollectable.add("");
+        }
+        ImageView photo = new ImageView(new Image("imageFiles/noImagePlaceholder.jpg"));
+        photo.setFitHeight(100);
+        photo.setFitWidth(100);
+        Collectable collectable = new Collectable(dataCollectable, allColumns, photo);
+        allCollectables.add(collectable);
+        collectable.setId(allCollectables.indexOf(collectable) + 1);
+        updateID();
+        tableView.setItems(allCollectables);
+        dirtyFlag.set(true);
+    }
+
+    @FXML
+    public void deleteCollectable() {
+        if (tableView.getSelectionModel().getSelectedItem() != null) {
+            Collectable collectable = tableView.getSelectionModel().getSelectedItem();
+            allCollectables.remove(collectable);
+            updateID();
+            tableView.setItems(allCollectables);
+            dirtyFlag.set(true);
+        }
+    }
+
+    // Closing the Application
+    @FXML
+    public void closeApplication() {
+        Stage stage = (Stage) closeButton.getScene().getWindow();
+        stage.close();
+    }
+
+    // Minimize the Application
+    @FXML
+    public void maximizeApplication() {
+        if (!fullscreen) {
+            scrapbookStage.setFullScreen(true);
+            fullscreen = true;
+        } else {
+            scrapbookStage.setFullScreen(false);
+            fullscreen = false;
+        }
+    }
+
+    // Minimize the Application
+    @FXML
+    public void minimizeApplication() {
+        scrapbookStage.setIconified(true);
+    }
+
+    @FXML
+    public void doubleClickTitleBar(MouseEvent mouseEvent) {
+        if (mouseEvent.getClickCount() == 2) {
+            maximizeApplication();
+        }
+    }
+
+    @FXML
+    public void draggedMouse (MouseEvent event) {
+        //Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        scrapbookStage.setX(event.getScreenX() - xOffset);
+        scrapbookStage.setY(event.getScreenY() - yOffset);
+    }
+
+    @FXML
+    public void pressedMouse (MouseEvent event) {
+        xOffset = event.getSceneX();
+        yOffset = event.getSceneY();
+    }
+
+    @FXML
+    public void changeWhiteCloseButton() {
+        ImageView whiteCloseSign = new ImageView(new Image("imageFiles/WhiteCloseButton.png"));
+        //whiteCloseSign.setPreserveRatio(preserveRatio);
+        whiteCloseSign.setFitWidth(30);
+        whiteCloseSign.setFitHeight(30);
+
+        closeButton.setGraphic(whiteCloseSign);
+        closeButton.setStyle("-fx-background-color: rgba(242, 38, 19, 1)");
+    }
+
+    @FXML
+    public void changeRedCloseButton() {
+        ImageView redCloseSign = new ImageView("imageFiles/RedCloseButton.png");
+        redCloseSign.setFitWidth(30);
+        redCloseSign.setFitHeight(30);
+
+        closeButton.setGraphic(redCloseSign);
+        closeButton.setStyle("-fx-background-color: transparent");
+    }
+
+    public void updateID() {
+        for (Collectable collectable: allCollectables) {
+            collectable.setId(allCollectables.indexOf(collectable) + 1);
+        }
+    }
 }
+
+

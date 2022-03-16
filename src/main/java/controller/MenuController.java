@@ -9,18 +9,17 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import program.Collectable;
+import program.ResizeHelper;
 
 
 import java.io.*;
 import java.net.URL;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -28,7 +27,7 @@ import java.util.ResourceBundle;
 public class MenuController implements Initializable{
 
     public static Stage menuStage;
-    public CreatingScrapbookController creatingScrapbookController;
+    public CreateScrapbookController createScrapbookController;
     public ScrapbookController scrapbookController;
     public ErrorController errorController;
 
@@ -44,6 +43,8 @@ public class MenuController implements Initializable{
     public Button openButton;
     @FXML
     public Button galleryButton;
+    @FXML
+    public VBox openScrapbookVBox;
     @FXML
     public ListView<String> scrapbookNames;
     @FXML
@@ -72,9 +73,7 @@ public class MenuController implements Initializable{
         setSaveDirectoryonDesktop();
         createSaveFile();
         readSaveFile();
-        scrapbookNames.setVisible(false);
-        openScrapbook.setVisible(false);
-        deleteScrapbook.setVisible(false);
+        openScrapbookVBox.setVisible(false);
 
         for (String s : scrapbooks) {
             isInitialized.put(s, false);
@@ -85,13 +84,14 @@ public class MenuController implements Initializable{
     @FXML
     public void newScrapbook() {
             try {
-                creatingScrapbookController = new CreatingScrapbookController();
+                createScrapbookController = new CreateScrapbookController();
                 //creatingScrapbookController.menuController = this;
 
-                Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader().getResource("fxmlFiles/CreatingScrapbook.fxml")));
-                creatingScrapbookController.creatingScrapbookStage = new Stage();
-                creatingScrapbookController.creatingScrapbookStage.setScene(new Scene(root));
-                creatingScrapbookController.creatingScrapbookStage.show();
+                Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader().getResource("fxmlFiles/CreateScrapbook.fxml")));
+                createScrapbookController.createScrapbookStage = new Stage();
+                createScrapbookController.createScrapbookStage.initStyle(StageStyle.UNDECORATED);
+                createScrapbookController.createScrapbookStage.setScene(new Scene(root));
+                createScrapbookController.createScrapbookStage.show();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -104,9 +104,7 @@ public class MenuController implements Initializable{
         // String saveFilePath = System.getProperty("user.home") + File.separator + "Desktop" + File.separator + "Collector's Edition" + File.separator + saveFileName;
         java.util.Collections.sort(scrapbooks);
         scrapbookNames.setItems(scrapbooks);
-        scrapbookNames.setVisible(true);
-        openScrapbook.setVisible(true);
-        deleteScrapbook.setVisible(true);
+        openScrapbookVBox.setVisible(true);
     }
 
     // Create "Collector's Edition" and "Scrapbooks" Folder if not existent
@@ -202,6 +200,7 @@ public class MenuController implements Initializable{
             // Get the ScrapbookController
             FXMLLoader loader = new FXMLLoader((Objects.requireNonNull(getClass().getClassLoader().getResource("fxmlFiles/Scrapbook.fxml"))));
             Parent root = loader.load();
+
             scrapbookController = loader.getController();
             scrapbookController.setName(scrapbook);
 
@@ -246,13 +245,18 @@ public class MenuController implements Initializable{
                 if (counter == 3) {
                     data.addAll(line.split(";", -1));
 
-                    String imagePath = data.get(0);
+                    int id = Integer.parseInt(data.get(0));
+                    String imagePath = data.get(1);
+
+                    data.remove(0);
                     data.remove(imagePath);
+
                     ImageView photo = new ImageView(new Image(imagePath));
                     photo.setFitHeight(100);
                     photo.setFitWidth(100);
 
                     Collectable collectable = new Collectable(data, columns, photo);
+                    collectable.setId(id);
                     collectables.add(collectable);
                     data.clear();
 
@@ -289,10 +293,13 @@ public class MenuController implements Initializable{
 
             // Open New Scrapbook
             scrapbookController.scrapbookStage = new Stage();
+            scrapbookController.scrapbookStage.initStyle(StageStyle.UNDECORATED);
             scrapbookController.scrapbookStage.setScene(new Scene(root));
             scrapbookController.scrapbookStage.setTitle(scrapbookController.name);
-            scrapbookController.scrapbookStage.show();
 
+            ResizeHelper.addResizeListener(scrapbookController.scrapbookStage);
+
+            scrapbookController.scrapbookStage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -351,5 +358,26 @@ public class MenuController implements Initializable{
 
     public void setIsInitialized(HashMap<String, Boolean> isInitialized) {
         this.isInitialized = isInitialized;
+    }
+
+    @FXML
+    public void changeWhiteCloseButton() {
+        ImageView whiteCloseSign = new ImageView(new Image("imageFiles/WhiteCloseButton.png"));
+        //whiteCloseSign.setPreserveRatio(preserveRatio);
+        whiteCloseSign.setFitWidth(30);
+        whiteCloseSign.setFitHeight(30);
+
+        closeButton.setGraphic(whiteCloseSign);
+        closeButton.setStyle("-fx-background-color: rgba(242, 38, 19, 1)");
+    }
+
+    @FXML
+    public void changeRedCloseButton() {
+        ImageView redCloseSign = new ImageView("imageFiles/RedCloseButton.png");
+        redCloseSign.setFitWidth(30);
+        redCloseSign.setFitHeight(30);
+
+        closeButton.setGraphic(redCloseSign);
+        closeButton.setStyle("-fx-background-color: transparent");
     }
 }
